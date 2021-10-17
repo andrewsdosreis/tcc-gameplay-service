@@ -14,7 +14,7 @@ spring:
 
 api:
     info:
-        title: 'Jornada-Service'
+        title: 'Gameplay-Service'
         description: 'Serviço de gameplay do jogo Luta de Classes'
         version: v1
         termOfService: 'Termos do Serviço'
