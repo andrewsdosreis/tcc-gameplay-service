@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import br.com.lutadeclasses.gameplayservice.entity.Acao;
 import br.com.lutadeclasses.gameplayservice.entity.Personagem;
 import br.com.lutadeclasses.gameplayservice.entity.PersonagemBarra;
+import br.com.lutadeclasses.gameplayservice.exception.GameOverException;
 import br.com.lutadeclasses.gameplayservice.model.AcaoTipoEnum;
+import br.com.lutadeclasses.gameplayservice.model.PersonagemStatusEnum;
 import br.com.lutadeclasses.gameplayservice.repository.PersonagemBarraRepository;
 import br.com.lutadeclasses.gameplayservice.repository.PersonagemRepository;
 
@@ -45,6 +47,19 @@ public class PersonagemService {
             });
 
         return personagemBarraRepository.saveAll(personagemBarraList);
+    }
+
+    public void verificarSePersonagemFoiDerrotado(Personagem personagem) {
+        if (personagem.getPersonagemBarraList().stream().anyMatch(barra -> barra.getValor() <= 0)) {
+            personagem.setStatus(PersonagemStatusEnum.DERROTADO.toString());
+            personagemRepository.save(personagem);
+            throw new GameOverException();
+        }
+    }
+
+    public void atualizarPersonagemParaVencedor(Personagem personagem) {
+        personagem.setStatus(PersonagemStatusEnum.VENCEDOR.toString());
+        personagemRepository.save(personagem);
     }
 
 }

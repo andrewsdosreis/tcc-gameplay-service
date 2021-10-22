@@ -37,8 +37,8 @@ public class JornadaCarta {
     @JsonBackReference
     private Carta carta;
 
-    @Column(name = "carta_inicial", nullable = false)
-    private Boolean cartaInicial;
+    @Column(name = "posicao", nullable = false)
+    private String posicao;
 
     @OneToMany(mappedBy = "jornadaCarta")
     @JsonManagedReference
@@ -75,12 +75,12 @@ public class JornadaCarta {
         this.carta = carta;
     }
 
-    public Boolean getCartaInicial() {
-        return cartaInicial;
+    public String getPosicao() {
+        return posicao;
     }
 
-    public void setCartaInicial(Boolean cartaInicial) {
-        this.cartaInicial = cartaInicial;
+    public void setPosicao(String posicao) {
+        this.posicao = posicao;
     }
 
     public List<JornadaAlternativa> getJornadaAlternativaList() {

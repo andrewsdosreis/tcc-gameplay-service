@@ -21,7 +21,7 @@ public class JornadaService {
     }
 
     public Optional<JornadaCarta> buscarJornadaCarta(Integer jornadaCartaId) {
-        return Optional.ofNullable(jornadaCartaRepository.getById(jornadaCartaId));
+        return Optional.ofNullable(jornadaCartaRepository.buscarJornadaCartaPorId(jornadaCartaId));
     }
 
     public Optional<JornadaCarta> buscarProximaJornadaCarta(Integer personagemId, Integer jornadaId) {

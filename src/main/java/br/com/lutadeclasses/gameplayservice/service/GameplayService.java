@@ -1,6 +1,5 @@
 package br.com.lutadeclasses.gameplayservice.service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -8,16 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.stereotype.Service;
 
-import br.com.lutadeclasses.gameplayservice.entity.Jogada;
 import br.com.lutadeclasses.gameplayservice.entity.JornadaAlternativa;
 import br.com.lutadeclasses.gameplayservice.entity.JornadaCarta;
 import br.com.lutadeclasses.gameplayservice.entity.Personagem;
-import br.com.lutadeclasses.gameplayservice.entity.PersonagemBarra;
-import br.com.lutadeclasses.gameplayservice.exception.GameOverException;
-import br.com.lutadeclasses.gameplayservice.exception.JogadaJaExisteException;
 import br.com.lutadeclasses.gameplayservice.exception.JornadaAlternativaNaoEncontradaException;
 import br.com.lutadeclasses.gameplayservice.exception.JornadaCartaNaoEncontradaException;
 import br.com.lutadeclasses.gameplayservice.exception.PersonagemNaoEncontradoException;
+import br.com.lutadeclasses.gameplayservice.model.PosicaoCartaEnum;
 import br.com.lutadeclasses.gameplayservice.model.request.JogadaDto;
 import br.com.lutadeclasses.gameplayservice.model.response.AlternativaDto;
 import br.com.lutadeclasses.gameplayservice.model.response.ProximaJogadaDto;
@@ -28,44 +24,44 @@ public class GameplayService {
     private JornadaService jornadaService;
     private PersonagemService personagemService;
     private JogadaService jogadaService;
+    private SessaoService sessaoService;
     private ObjectMapper objectMapper;
 
-    public GameplayService(JornadaService jornadaService, PersonagemService personagemService, JogadaService jogadaService, ObjectMapper objectMapper) {
+    public GameplayService(JornadaService jornadaService, PersonagemService personagemService, JogadaService jogadaService, SessaoService sessaoService, ObjectMapper objectMapper) {
         this.jornadaService = jornadaService;
         this.personagemService = personagemService;
         this.jogadaService = jogadaService;
+        this.sessaoService = sessaoService;
         this.objectMapper = objectMapper;
     }
 
     public ProximaJogadaDto buscarProximaJogada(Integer personagemId, Integer jornadaId) {
         Optional<JornadaCarta> jornadaCarta = jornadaService.buscarProximaJornadaCarta(personagemId, jornadaId);
-        if (jornadaCarta.isEmpty()) {
-            Optional<Jogada> jogada = jogadaService.buscarPrimeiraJogadaDoPersonagemNaJornada(personagemId, jornadaId);
-            if (jogada.isEmpty()) {
+        if (jornadaCarta.isEmpty() &&
+            jogadaService.buscarPrimeiraJogadaDoPersonagemNaJornada(personagemId, jornadaId).isEmpty()) {
                 jornadaCarta = jornadaService.buscarPrimeiraCartaDaJornada(jornadaId);
-            }
         }
 
         return montarProximaJogada(personagemId, jornadaId, jornadaCarta.orElseThrow(() -> new JornadaCartaNaoEncontradaException(personagemId, jornadaId)));
     }
 
     public ProximaJogadaDto fazerJogada(JogadaDto jogadaDto) {
-        //todo: add validacao -> se sessao esta aberta
-
-        Optional<Jogada> jogada = jogadaService.buscarJogada(jogadaDto.getPersonagemId(), jogadaDto.getJornadaCartaId());
-    
-        if (jogada.isPresent()) {
-            throw new JogadaJaExisteException(jogadaDto.getPersonagemId(), jogadaDto.getJornadaId(), jogadaDto.getJornadaCartaId());
-        }
-
+        jogadaService.validarSeJogadaJaFoiExecutada(jogadaDto.getPersonagemId(), jogadaDto.getJornadaId(), jogadaDto.getJornadaCartaId());
+        
         Personagem personagem = buscarPersonagem(jogadaDto.getPersonagemId());
+        sessaoService.validarSeSessaoEstaAberta(personagem.getSessao());
+        
         JornadaCarta jornadaCarta = buscarJornadaCarta(jogadaDto.getJornadaCartaId());
         JornadaAlternativa jornadaAlternativa = buscarJornadaAlternativa(jornadaCarta, jogadaDto.getAlternativaEscolhidaId());
+        
         jogadaService.inserirJogada(personagem, jornadaCarta, jornadaAlternativa);
-        personagemService.atualizarPersonagemBarra(personagem.getPersonagemBarraList(), jornadaAlternativa.getAlternativa().getAcaoList());
+        
+        personagemService.atualizarPersonagemBarra(personagem.getPersonagemBarraList(), jornadaAlternativa.getAlternativa().getAcaoList());        
+        personagemService.verificarSePersonagemFoiDerrotado(personagem);
 
-        if (verificarSeJogoAcabou(personagem.getPersonagemBarraList())) {
-            throw new GameOverException();
+        if (jornadaAlternativa.getProximaJornadaCarta().getPosicao().equals(PosicaoCartaEnum.FIM.toString())) {
+            jogadaService.inserirJogada(personagem, jornadaAlternativa.getProximaJornadaCarta(), null);
+            personagemService.atualizarPersonagemParaVencedor(personagem);
         }
         
         return montarProximaJogada(jogadaDto.getPersonagemId(), jogadaDto.getJornadaId(), jornadaAlternativa.getProximaJornadaCarta());
@@ -89,13 +85,14 @@ public class GameplayService {
     }
 
     private ProximaJogadaDto montarProximaJogada(Integer personagemId, Integer jornadaId, JornadaCarta jornadaCarta) {
+        String nomePersonagem = buscarPersonagem(personagemId).getNome();
         return ProximaJogadaDto
                 .builder()
                 .personagemId(personagemId)
                 .jornadaId(jornadaId)
                 .jornadaCartaId(jornadaCarta.getId())
                 .cartaId(jornadaCarta.getCarta().getId())
-                .cartaDescricao(jornadaCarta.getCarta().getDescricao())
+                .cartaDescricao(ajustaDescricaoDaCarta(jornadaCarta.getCarta().getDescricao(), nomePersonagem))
                 .alternativas(jornadaCarta
                                 .getCarta()
                                 .getAlternativas()
@@ -105,8 +102,8 @@ public class GameplayService {
                 .build();
     }
 
-    private boolean verificarSeJogoAcabou(List<PersonagemBarra> personagemBarraList) {
-        return personagemBarraList.stream().anyMatch(barra -> barra.getValor() <= 0);
+    private String ajustaDescricaoDaCarta(String cartaDescricao, String nomeJogador) {
+        return cartaDescricao.replace("%JOGADOR%", nomeJogador);
     }
-
+    
 }
