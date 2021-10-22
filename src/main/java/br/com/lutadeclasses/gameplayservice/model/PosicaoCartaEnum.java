@@ -1,5 +1,5 @@
 package br.com.lutadeclasses.gameplayservice.model;
 
-public enum AcaoTipoEnum {
-    SOMA, SUBTRAI
+public enum PosicaoCartaEnum {
+    INICIO, MEIO, FIM
 }
