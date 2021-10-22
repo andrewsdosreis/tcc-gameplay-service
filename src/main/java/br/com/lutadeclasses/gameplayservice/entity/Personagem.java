@@ -7,9 +7,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -26,6 +29,14 @@ public class Personagem {
 
     @Column(name = "nome", nullable = false)
     private String nome;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "sessao_id", nullable = false)
+    @JsonBackReference
+    private Sessao sessao;
 
     @OneToMany(mappedBy = "personagem")
     @JsonManagedReference
@@ -52,6 +63,22 @@ public class Personagem {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Sessao getSessao() {
+        return sessao;
+    }
+
+    public void setSessao(Sessao sessao) {
+        this.sessao = sessao;
     }
 
     public List<PersonagemBarra> getPersonagemBarraList() {
