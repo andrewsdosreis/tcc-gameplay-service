@@ -17,9 +17,9 @@ public interface JogadaRepository extends JpaRepository<Jogada, Integer> {
                                                                 + "join jornada_carta on jornada_carta.id = jogada.jornada_carta_id "
                                                                 + "where jogada.personagem_id = ?1 "
                                                                 + "and jornada_carta.jornada_id = ?2 "
+                                                                + "order by jogada.id "
                                                                 + "limit 1" ;
-
-    @Query(value = "CONSULTA_PRIMEIRA_JOGADA_DO_PERSONAGEM_E_JORNADA", nativeQuery = true)
+    @Query(value = CONSULTA_PRIMEIRA_JOGADA_DO_PERSONAGEM_NA_JORNADA, nativeQuery = true)
     Jogada buscarPrimeiraJogadaDoPersonagemNaJornada(Integer personagemId, Integer jornadaId);
-    
+
 }

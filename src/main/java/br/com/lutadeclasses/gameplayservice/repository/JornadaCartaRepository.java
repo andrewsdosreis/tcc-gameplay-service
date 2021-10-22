@@ -9,6 +9,9 @@ import br.com.lutadeclasses.gameplayservice.entity.JornadaCarta;
 @Repository
 public interface JornadaCartaRepository extends JpaRepository<JornadaCarta, Integer> {
     
+    @Query(value = "select * from jornada_carta where id = ?1", nativeQuery = true)
+    JornadaCarta buscarJornadaCartaPorId(Integer jornadaCartaId);
+
     String CONSULTA_JORNADA_CARTA_DA_PROXIMA_JOGADA = "select proxima_jornada_carta.* "
                                                     + "from jogada "
                                                     + "join jornada_alternativa on jornada_alternativa.id = jogada.jornada_alternativa_id "
@@ -19,7 +22,6 @@ public interface JornadaCartaRepository extends JpaRepository<JornadaCarta, Inte
                                                     + "and jornada.id = ?2 "
                                                     + "order by jogada.id desc "
                                                     + "limit 1" ;
-
     @Query(value = CONSULTA_JORNADA_CARTA_DA_PROXIMA_JOGADA, nativeQuery = true)
     JornadaCarta buscarProximaJogadaCarta(Integer personagemId, Integer jornadaId);
 
@@ -27,9 +29,8 @@ public interface JornadaCartaRepository extends JpaRepository<JornadaCarta, Inte
                                             + "from jornada "
                                             + "join jornada_carta on jornada_carta.jornada_id = jornada.id "
                                             + "where jornada.id = ?1 "
-                                            + "and jornada_carta.carta_inicial = 1 "
+                                            + "and jornada_carta.posicao = 'INICIO' "
                                             + "limit 1" ;
-
     @Query(value = CONSULTA_PRIMEIRA_JOGADA_CARTA, nativeQuery = true)
     JornadaCarta buscarPrimeiraJornadaCarta(Integer jornadaId);
     
