@@ -18,9 +18,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import br.com.lutadeclasses.gameplayservice.exception.JornadaAlternativaNaoEncontradaException;
-import br.com.lutadeclasses.gameplayservice.exception.JornadaCartaNaoEncontradaException;
-import br.com.lutadeclasses.gameplayservice.exception.PersonagemNaoEncontradoException;
+import br.com.lutadeclasses.gameplayservice.exception.notfound.RegistroNaoEncontradoException;
+import br.com.lutadeclasses.gameplayservice.exception.validation.ValidacaoException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,12 +28,12 @@ public class GlobalExceptionHandler {
 
     private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(PersonagemNaoEncontradoException.class)
-    public ResponseEntity<ErrorHandler> objectNotFound(PersonagemNaoEncontradoException e, HttpServletRequest request) {
+    @ExceptionHandler(RegistroNaoEncontradoException.class)
+    public ResponseEntity<ErrorHandler> objectNotFound(RegistroNaoEncontradoException e, HttpServletRequest request) {
         var erro = ErrorHandler.builder()
                                .timestamp(System.currentTimeMillis())
                                .status(HttpStatus.NOT_FOUND.value())
-                               .error("NOT_FOUND")
+                               .error("REGISTRO NAO ENCONTRADO")
                                .message(e.getMessage())
                                .path(request.getRequestURI())
                                .method(request.getMethod())
@@ -43,40 +42,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 
-    @ExceptionHandler(JornadaCartaNaoEncontradaException.class)
-    public ResponseEntity<ErrorHandler> objectNotFound(JornadaCartaNaoEncontradaException e, HttpServletRequest request) {
+    @ExceptionHandler(ValidacaoException.class)
+    public ResponseEntity<ErrorHandler> objectNotFound(ValidacaoException e, HttpServletRequest request) {
         var erro = ErrorHandler.builder()
                                .timestamp(System.currentTimeMillis())
-                               .status(HttpStatus.NOT_FOUND.value())
-                               .error("NOT_FOUND")
+                               .status(HttpStatus.BAD_REQUEST.value())
+                               .error("ERRO DE VALIDACAO")
                                .message(e.getMessage())
                                .path(request.getRequestURI())
                                .method(request.getMethod())
                                .build();
         logger.error(MGS_ERRO, erro);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
-    
-    @ExceptionHandler(JornadaAlternativaNaoEncontradaException.class)
-    public ResponseEntity<ErrorHandler> objectNotFound(JornadaAlternativaNaoEncontradaException e, HttpServletRequest request) {
-        var erro = ErrorHandler.builder()
-                               .timestamp(System.currentTimeMillis())
-                               .status(HttpStatus.NOT_FOUND.value())
-                               .error("NOT_FOUND")
-                               .message(e.getMessage())
-                               .path(request.getRequestURI())
-                               .method(request.getMethod())
-                               .build();
-        logger.error(MGS_ERRO, erro);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
-    }    
 
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<ErrorHandler> jsonProcessingException(JsonProcessingException e, HttpServletRequest request) {
         var erro = ErrorHandler.builder()
                                .timestamp(System.currentTimeMillis())
                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                               .error("JsonProcessing Exception")
+                               .error("JSON PROCESSING EXCEPTION")
                                .message(e.getMessage())
                                .path(request.getRequestURI())
                                .method(request.getMethod())
@@ -90,7 +75,7 @@ public class GlobalExceptionHandler {
         var erro = ErrorHandler.builder()
                                .timestamp(System.currentTimeMillis())
                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                               .error("JsonPatch Exception")
+                               .error("JSON PATCH EXCEPTION")
                                .message(e.getMessage())
                                .path(request.getRequestURI())
                                .method(request.getMethod())
@@ -112,14 +97,14 @@ public class GlobalExceptionHandler {
 
         var erro = ErrorHandler.builder()
                                .timestamp(System.currentTimeMillis())
-                               .status(HttpStatus.BAD_REQUEST.value())
-                               .error("Bad Request")
+                               .status(HttpStatus.EXPECTATION_FAILED.value())
+                               .error("ERRO DE VALIDACAO")
                                .message(errors.toString())
                                .path(request.getRequestURI())
                                .method(request.getMethod())
                                .build();        
         logger.error(MGS_ERRO, erro);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(erro);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -127,7 +112,7 @@ public class GlobalExceptionHandler {
         var erro = ErrorHandler.builder()
                                .timestamp(System.currentTimeMillis())
                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                               .error("Data Integrity Violation")
+                               .error("DATA INTEGRITY VIOLATION")
                                .message(e.getMessage())
                                .path(request.getRequestURI())
                                .method(request.getMethod())
@@ -141,7 +126,7 @@ public class GlobalExceptionHandler {
         var erro = ErrorHandler.builder()
                                .timestamp(System.currentTimeMillis())
                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                               .error("Internal Server Error")
+                               .error("INTERNAL SERVER ERROR")
                                .message(e.getMessage())
                                .path(request.getRequestURI())
                                .method(request.getMethod())
