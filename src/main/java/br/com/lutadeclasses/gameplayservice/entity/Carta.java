@@ -27,6 +27,9 @@ public class Carta {
     @Column(name = "descricao", nullable = false)
     private String descricao;
 
+    @Column(name = "ator", nullable = false)
+    private String ator;
+
     @OneToMany(mappedBy = "carta")
     @JsonManagedReference
     private List<Alternativa> alternativas;
@@ -52,6 +55,14 @@ public class Carta {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getAtor() {
+        return ator;
+    }
+
+    public void setAtor(String ator) {
+        this.ator = ator;
     }
 
     public List<Alternativa> getAlternativas() {
