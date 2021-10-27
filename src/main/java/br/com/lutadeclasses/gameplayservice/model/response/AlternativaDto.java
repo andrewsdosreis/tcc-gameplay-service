@@ -17,13 +17,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class AlternativaDto {
-    
-    private Integer id;
+    private Integer jornadaAlternativaId;
     private String descricao;
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
-    
 }

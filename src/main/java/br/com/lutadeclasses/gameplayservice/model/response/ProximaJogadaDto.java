@@ -19,17 +19,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class ProximaJogadaDto {
-    
     private Integer personagemId;
+    private String personagemNome;
     private Integer jornadaId;
     private Integer jornadaCartaId;
-    private Integer cartaId;
-    private String cartaDescricao;
+    private String carta;
+    private String ator;
     private List<AlternativaDto> alternativas;
+    private List<PersonagemBarraDto> barras;
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
-    
 }
