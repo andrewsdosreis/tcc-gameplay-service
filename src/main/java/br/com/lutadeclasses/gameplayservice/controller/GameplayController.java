@@ -27,7 +27,7 @@ public class GameplayController extends BaseController {
         return ok(gameplayService.buscarProximaJogada(personagemId, jornadaId));
     }
 
-    @PostMapping(value = "/jogar")
+    @PostMapping
     public ResponseEntity<ProximaJogadaDto> fazerJogada(@RequestBody JogadaDto proximaJogadaDto) {
         return ok(gameplayService.fazerJogada(proximaJogadaDto));
     }
