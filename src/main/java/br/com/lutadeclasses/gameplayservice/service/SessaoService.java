@@ -33,20 +33,30 @@ public class SessaoService {
                     .collect(Collectors.toList());
     }
 
-    public SessaoDto buscarSessao(Integer sessaoId) {
-        return sessaoRepository.findById(sessaoId)
-                               .map(SessaoConverter::converterSessao)
-                               .orElseThrow(() -> new SessaoNaoEncontradaException(sessaoId));
+    public Sessao buscarSessao(Integer sessaoId) {
+        return sessaoRepository.findById(sessaoId).orElseThrow(() -> new SessaoNaoEncontradaException(sessaoId));
     }
 
-    public SessaoDto inserirSessao(NovaSessaoDto novaSessaoDto, Jornada jornada) {
+    public Sessao inserirSessao(NovaSessaoDto novaSessaoDto, Jornada jornada) {
         validarDadosDeSessaoAntesDeInserir(novaSessaoDto);
         var sessao = new Sessao(obj -> {
             obj.setTitulo(novaSessaoDto.getTitulo());
             obj.setStatus(SessaoStatusEnum.REGISTRADA.toString());
             obj.setJornada(jornada);
         });
-        return SessaoConverter.converterSessao(sessaoRepository.save(sessao));
+        return sessaoRepository.save(sessao);
+    }
+
+    public Sessao abrirSessao(Integer sessaoId) {
+        var sessao = buscarSessao(sessaoId);
+        sessao.setStatus(SessaoStatusEnum.ABERTA.toString());
+        return sessaoRepository.save(sessao);
+    }
+    
+    public Sessao fecharSessao(Integer sessaoId) {
+        var sessao = buscarSessao(sessaoId);
+        sessao.setStatus(SessaoStatusEnum.ENCERRADA.toString());
+        return sessaoRepository.save(sessao);
     }
 
     public void validarSeSessaoEstaAberta(Sessao sessao) {

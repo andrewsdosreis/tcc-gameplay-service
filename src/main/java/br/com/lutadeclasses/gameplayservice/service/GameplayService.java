@@ -1,9 +1,11 @@
 package br.com.lutadeclasses.gameplayservice.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import br.com.lutadeclasses.gameplayservice.entity.Acao;
 import br.com.lutadeclasses.gameplayservice.entity.Jogada;
 import br.com.lutadeclasses.gameplayservice.entity.JornadaCarta;
 import br.com.lutadeclasses.gameplayservice.entity.Personagem;
@@ -49,24 +51,23 @@ public class GameplayService {
         validarJogada(jogadaDto, personagem);
 
         var jornadaCarta = jornadaService.buscarJornadaCarta(jogadaDto.getJornadaCartaId());
-        var jornadaAlternativa = jornadaService.buscarJornadaAlternativa(jornadaCarta, jogadaDto.getJornadaAlternativaId());
-        
+        var jornadaAlternativa = jornadaService.buscarJornadaAlternativa(jornadaCarta, jogadaDto.getJornadaAlternativaId());        
         var jogada = jogadaService.inserirJogada(personagem, jornadaCarta, jornadaAlternativa);
-        personagemService.atualizarPersonagemBarra(personagem.getPersonagemBarraList(), jornadaAlternativa.getAlternativa().getAcaoList());        
 
-        if (personagemService.verificarSePersonagemFoiDerrotado(personagem)) {
+        atualizarPersonagemAposCadaJogada(personagem, jornadaAlternativa.getAlternativa().getAcoes());
+
+        if (personagemService.validarSePersonagemFoiDerrotado(personagem)) {
             var barraQueDerrotouPersonagem = personagemService.buscarBarraQueCausouDerrotaDoPersonagem(personagem);
             var jornadaCartaDaDerrota = jornadaService.buscarJornadaCartaDeDerrota(jogadaDto.getJornadaId(), barraQueDerrotouPersonagem.getBarra().getId());
             jogada = inserirFimDeJogo(personagem, jornadaCartaDaDerrota.getJornadaCarta(), PersonagemStatusEnum.DERROTADO);
+            return ProximaJogadaFactory.build(personagem, buscarProximaJornadaCarta(jogada));
         }
 
         if (jornadaService.verificarSeJornadaChegouAoFimComVitoria(jornadaAlternativa.getProximaJornadaCarta())) {
             jogada = inserirFimDeJogo(personagem, jornadaAlternativa.getProximaJornadaCarta(), PersonagemStatusEnum.VENCEDOR);
         }
 
-        var proximaJornadaCarta = buscarProximaJornadaCarta(jogada);
-
-        return ProximaJogadaFactory.build(personagem, proximaJornadaCarta);
+        return ProximaJogadaFactory.build(personagem, buscarProximaJornadaCarta(jogada));
     }
 
     private void validarJogada(JogadaDto jogadaDto, Personagem personagem) {
@@ -74,6 +75,13 @@ public class GameplayService {
         sessaoService.validarSeSessaoEstaAberta(personagem.getSessao());
         personagemService.validarSePersonagemEstaNaJornada(personagem, jogadaDto.getJornadaId());
         personagemService.validarSePersonagemAindaEstaJogando(personagem);
+    }
+
+    private void atualizarPersonagemAposCadaJogada(Personagem personagem, List<Acao> acoes) {
+        if (personagem.getStatus().equals(PersonagemStatusEnum.REGISTRADO.toString())) {
+            personagemService.atualizarStatusDoPersonagem(personagem, PersonagemStatusEnum.JOGANDO);
+        }
+        personagemService.atualizarPersonagemBarra(personagem.getPersonagemBarras(), acoes);
     }
 
     private Jogada inserirFimDeJogo(Personagem personagem, JornadaCarta jornadaCarta, PersonagemStatusEnum status) {

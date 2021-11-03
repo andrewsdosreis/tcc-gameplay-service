@@ -1,10 +1,13 @@
 package br.com.lutadeclasses.gameplayservice.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import br.com.lutadeclasses.gameplayservice.entity.Jogada;
+import br.com.lutadeclasses.gameplayservice.entity.Personagem;
 
 @Repository
 public interface JogadaRepository extends JpaRepository<Jogada, Integer> {
@@ -22,4 +25,5 @@ public interface JogadaRepository extends JpaRepository<Jogada, Integer> {
     @Query(value = CONSULTA_ULTIMA_JOGADA_DO_PERSONAGEM, nativeQuery = true)
     Jogada buscarUltimaJogadaDoPersonagemNaJornada(Integer personagemId, Integer jornadaId);
 
+    List<Jogada> findByPersonagem(Personagem personagem);
 }

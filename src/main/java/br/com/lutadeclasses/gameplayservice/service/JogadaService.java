@@ -1,6 +1,7 @@
 package br.com.lutadeclasses.gameplayservice.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +20,10 @@ public class JogadaService {
 
     public JogadaService(JogadaRepository jogadaRepository) {
         this.jogadaRepository = jogadaRepository;
+    }
+
+    public List<Jogada> buscarJogadasDoPersonagem(Personagem personagem) {
+        return jogadaRepository.findByPersonagem(personagem);
     }
 
     public Optional<Jogada> buscarUltimaJogadaDoPersonagemNaJornada(Integer personagemId, Integer jornadaId) {
