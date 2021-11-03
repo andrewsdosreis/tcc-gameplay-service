@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.lutadeclasses.gameplayservice.converter.SessaoConverter;
 import br.com.lutadeclasses.gameplayservice.model.request.NovaSessaoDto;
 import br.com.lutadeclasses.gameplayservice.model.response.SessaoDto;
 import br.com.lutadeclasses.gameplayservice.service.JornadaService;
@@ -36,13 +37,27 @@ public class SessaoController extends BaseController {
 
     @GetMapping(value="/{sessaoId}")
     public ResponseEntity<SessaoDto> buscarSessao(@PathVariable Integer sessaoId) {
-        return ok(sessaoService.buscarSessao(sessaoId));
+        var sessao = sessaoService.buscarSessao(sessaoId);
+        return ok(SessaoConverter.converterSessao(sessao));
     }
     
     @PostMapping
     public ResponseEntity<SessaoDto> inserirSessao(@RequestBody @Valid NovaSessaoDto novaSessaoDto) {        
         var jornada = jornadaService.buscarJornada(novaSessaoDto.getJornadaId());
-        return ok(sessaoService.inserirSessao(novaSessaoDto, jornada));
+        var sessao = sessaoService.inserirSessao(novaSessaoDto, jornada);
+        return ok(SessaoConverter.converterSessao(sessao));
     }
-    
+
+    @PostMapping(value = "/{sessaoId}/abrir")
+    public ResponseEntity<SessaoDto> abrirSessao(@PathVariable Integer sessaoId) {
+        var sessao = sessaoService.abrirSessao(sessaoId);
+        return ok(SessaoConverter.converterSessao(sessao));
+    }
+
+    @PostMapping(value = "/{sessaoId}/fechar")
+    public ResponseEntity<SessaoDto> fecharSessao(@PathVariable Integer sessaoId) {
+        var sessao = sessaoService.fecharSessao(sessaoId);
+        return ok(SessaoConverter.converterSessao(sessao));
+    }
+
 }
