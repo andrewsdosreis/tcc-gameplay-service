@@ -39,7 +39,7 @@ public interface ProximaJogadaFactory {
 
     private static List<PersonagemBarraDto> montarListaDeBarrasDoPersonagem(Personagem personagem) {
         return personagem
-                .getPersonagemBarraList()
+                .getPersonagemBarras()
                 .stream()
                 .map(personagemBarra -> PersonagemBarraDto
                                             .builder()
@@ -50,6 +50,6 @@ public interface ProximaJogadaFactory {
     }
 
     private static String ajustaDescricaoDaCarta(String cartaDescricao, String nomeJogador) {
-        return cartaDescricao.replace("%JOGADOR%", nomeJogador);
+        return cartaDescricao.replace("$nome_jogador", nomeJogador);
     }
 }
