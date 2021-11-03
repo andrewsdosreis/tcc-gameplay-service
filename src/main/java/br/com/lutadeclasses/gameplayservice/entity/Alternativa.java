@@ -19,7 +19,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
-@Table(name = "alternativa", schema = "luta-de-classe-db")
+@Table(name = "alternativa")
 public class Alternativa {
     
     @Id
@@ -37,7 +37,7 @@ public class Alternativa {
 
     @OneToMany(mappedBy = "alternativa")
     @JsonManagedReference
-    private List<Acao> acaoList;
+    private List<Acao> acoes;
 
     public Alternativa() {
     }
@@ -70,12 +70,12 @@ public class Alternativa {
         this.carta = carta;
     }
 
-    public List<Acao> getAcaoList() {
-        return acaoList;
+    public List<Acao> getAcoes() {
+        return acoes;
     }
 
-    public void setAcaoList(List<Acao> acaoList) {
-        this.acaoList = acaoList;
+    public void setAcoes(List<Acao> acaoList) {
+        this.acoes = acaoList;
     }
 
     @Override

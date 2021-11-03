@@ -17,7 +17,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
-@Table(name = "jogada", schema = "luta-de-classe-db")
+@Table(name = "jogada")
 public class Jogada {
     
     @Id

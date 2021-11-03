@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
-@Table(name = "barra", schema = "luta-de-classe-db")
+@Table(name = "barra")
 public class Barra {
     
     @Id

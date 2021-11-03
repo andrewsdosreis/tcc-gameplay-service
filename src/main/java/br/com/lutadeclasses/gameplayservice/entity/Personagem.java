@@ -3,6 +3,7 @@ package br.com.lutadeclasses.gameplayservice.entity;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
-@Table(name = "personagem", schema = "luta-de-classe-db")
+@Table(name = "personagem")
 public class Personagem {
     
     @Id
@@ -34,13 +35,18 @@ public class Personagem {
     private String status;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonBackReference
+    private Usuario usuario;
+
+    @ManyToOne
     @JoinColumn(name = "sessao_id", nullable = false)
     @JsonBackReference
     private Sessao sessao;
 
-    @OneToMany(mappedBy = "personagem")
+    @OneToMany(mappedBy = "personagem", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<PersonagemBarra> personagemBarraList;
+    private List<PersonagemBarra> personagemBarras;
 
     public Personagem() {
     }
@@ -73,6 +79,14 @@ public class Personagem {
         this.status = status;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     public Sessao getSessao() {
         return sessao;
     }
@@ -81,12 +95,12 @@ public class Personagem {
         this.sessao = sessao;
     }
 
-    public List<PersonagemBarra> getPersonagemBarraList() {
-        return personagemBarraList;
+    public List<PersonagemBarra> getPersonagemBarras() {
+        return personagemBarras;
     }
 
-    public void setPersonagemBarraList(List<PersonagemBarra> personagemBarraList) {
-        this.personagemBarraList = personagemBarraList;
+    public void setPersonagemBarras(List<PersonagemBarra> personagemBarraList) {
+        this.personagemBarras = personagemBarraList;
     }
 
     @Override
