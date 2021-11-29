@@ -77,6 +77,38 @@ public class PersonagemBarra {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PersonagemBarra other = (PersonagemBarra) obj;
+        if (barra == null) {
+            if (other.barra != null)
+                return false;
+        } else if (!barra.equals(other.barra))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (personagem == null) {
+            if (other.personagem != null)
+                return false;
+        } else if (!personagem.equals(other.personagem))
+            return false;
+        if (valor == null) {
+            if (other.valor != null)
+                return false;
+        } else if (!valor.equals(other.valor))
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }

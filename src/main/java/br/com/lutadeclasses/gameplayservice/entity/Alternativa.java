@@ -79,6 +79,38 @@ public class Alternativa {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Alternativa other = (Alternativa) obj;
+        if (acoes == null) {
+            if (other.acoes != null)
+                return false;
+        } else if (!acoes.equals(other.acoes))
+            return false;
+        if (carta == null) {
+            if (other.carta != null)
+                return false;
+        } else if (!carta.equals(other.carta))
+            return false;
+        if (descricao == null) {
+            if (other.descricao != null)
+                return false;
+        } else if (!descricao.equals(other.descricao))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }

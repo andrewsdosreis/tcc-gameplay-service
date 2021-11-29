@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.5.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'jacoco'
 	id 'java'
 }
 
@@ -49,4 +50,46 @@ dependencyManagement {
 
 test {
 	useJUnitPlatform()
+	jacoco {
+        destinationFile = layout.buildDirectory.file('jacoco/jacocoTest.exec').get().asFile
+        classDumpDir = layout.buildDirectory.dir('jacoco/classpathdumps').get().asFile
+    }	
+}
+
+jacocoTestReport {
+    dependsOn test
+	
+	reports {
+			xml.required = true
+			csv.required = false
+			html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+		}
+    
+	afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/lutadeclasses/gameplayservice/config/*',
+							  '**/lutadeclasses/gameplayservice/controller/*',
+							  '**/lutadeclasses/gameplayservice/converter/*',
+                              '**/lutadeclasses/gameplayservice/entity/*',
+							  '**/lutadeclasses/gameplayservice/exception/handler/*',
+							  '**/lutadeclasses/gameplayservice/factory/*',
+							  '**/lutadeclasses/gameplayservice/model/*',
+							  '**/lutadeclasses/gameplayservice/GameplayServiceApplication.class'
+							 ])
+        }))
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "andrewsdosreis_tcc-gameplay-service"
+    property "sonar.organization", "andrewsdosreis"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
 }

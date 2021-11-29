@@ -92,6 +92,43 @@ public class JornadaCarta {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        JornadaCarta other = (JornadaCarta) obj;
+        if (carta == null) {
+            if (other.carta != null)
+                return false;
+        } else if (!carta.equals(other.carta))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (jornada == null) {
+            if (other.jornada != null)
+                return false;
+        } else if (!jornada.equals(other.jornada))
+            return false;
+        if (jornadaAlternativaList == null) {
+            if (other.jornadaAlternativaList != null)
+                return false;
+        } else if (!jornadaAlternativaList.equals(other.jornadaAlternativaList))
+            return false;
+        if (posicao == null) {
+            if (other.posicao != null)
+                return false;
+        } else if (!posicao.equals(other.posicao))
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }

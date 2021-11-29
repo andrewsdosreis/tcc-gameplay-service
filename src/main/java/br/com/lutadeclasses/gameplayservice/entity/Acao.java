@@ -88,6 +88,43 @@ public class Acao {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Acao other = (Acao) obj;
+        if (alternativa == null) {
+            if (other.alternativa != null)
+                return false;
+        } else if (!alternativa.equals(other.alternativa))
+            return false;
+        if (barra == null) {
+            if (other.barra != null)
+                return false;
+        } else if (!barra.equals(other.barra))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (tipo == null) {
+            if (other.tipo != null)
+                return false;
+        } else if (!tipo.equals(other.tipo))
+            return false;
+        if (valor == null) {
+            if (other.valor != null)
+                return false;
+        } else if (!valor.equals(other.valor))
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }

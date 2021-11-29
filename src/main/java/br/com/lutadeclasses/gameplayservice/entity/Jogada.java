@@ -91,6 +91,43 @@ public class Jogada {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Jogada other = (Jogada) obj;
+        if (dataHora == null) {
+            if (other.dataHora != null)
+                return false;
+        } else if (!dataHora.equals(other.dataHora))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (jornadaAlternativa == null) {
+            if (other.jornadaAlternativa != null)
+                return false;
+        } else if (!jornadaAlternativa.equals(other.jornadaAlternativa))
+            return false;
+        if (jornadaCarta == null) {
+            if (other.jornadaCarta != null)
+                return false;
+        } else if (!jornadaCarta.equals(other.jornadaCarta))
+            return false;
+        if (personagem == null) {
+            if (other.personagem != null)
+                return false;
+        } else if (!personagem.equals(other.personagem))
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
